@@ -74,7 +74,26 @@ bun add @bancada/electronics
 |---|---|---|
 | `diagram` | `diagram.json` | the circuit file, inside the lesson folder |
 | `sketchDir` | `sketch` | folder holding the `.ino` |
-| `labels` | English | `pins`, `circuit`, `simulate` |
+| `labels` | English | every string the cards put on screen |
+
+### Labels
+
+Overriding one key leaves the rest in English.
+
+| key | default | where it shows |
+|---|---|---|
+| `pins` | `Pins` | title of the pins card |
+| `circuit` | `Circuit` | title of the circuit card |
+| `simulate` | see below | the line under the drawing |
+| `zoomIn` | `Zoom in` | zoom controls — icon-only buttons, so the |
+| `zoomOut` | `Zoom out` | aria-label is the ONLY name a screen reader |
+| `zoomFit` | `Fit to width` | has for them |
+| `zoomFull` | `Open full screen` | |
+| `zoomLevel` | `Zoom level, percent` | the editable percentage field |
+| `close` | `Close` | the modal's close button |
+
+The `data-zoom` values (`in`, `out`, `fit`, `full`) are stable ids the script
+dispatches on — they are not display text and do not change with the language.
 
 ## License
 

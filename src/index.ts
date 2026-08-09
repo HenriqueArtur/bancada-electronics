@@ -16,7 +16,19 @@ interface Settings {
   root: string;
   diagram: string;
   sketchDir: string;
-  labels: { pins: string; circuit: string; simulate: string };
+  labels: {
+    pins: string;
+    circuit: string;
+    simulate: string;
+    /** Accessible names for the zoom controls. They are icon-only buttons,
+     *  so the aria-label is the ONLY name a screen reader has for them. */
+    zoomIn: string;
+    zoomOut: string;
+    zoomFit: string;
+    zoomFull: string;
+    zoomLevel: string;
+    close: string;
+  };
 }
 
 const DEFAULTS: Settings = {
@@ -27,6 +39,12 @@ const DEFAULTS: Settings = {
     pins: "Pins",
     circuit: "Circuit",
     simulate: "Paste both into a new Wokwi project.",
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    zoomFit: "Fit to width",
+    zoomFull: "Open full screen",
+    zoomLevel: "Zoom level, percent",
+    close: "Close",
   },
 };
 
@@ -73,11 +91,11 @@ export function electronicsPlugin(): Plugin {
         const rows = Object.entries(pins)
           .map(
             ([pin, id]) =>
-              `<div class="peca"><span>GPIO ${escapeHtml(pin)}</span>` +
-              `<span class="selo">${escapeHtml(facts.get(id)?.name ?? id)}</span></div>`,
+              `<div class="part"><span>GPIO ${escapeHtml(pin)}</span>` +
+              `<span class="badge">${escapeHtml(facts.get(id)?.name ?? id)}</span></div>`,
           )
           .join("");
-        cards.push(`<div class="cartao"><h3>${escapeHtml(settings.labels.pins)}</h3>${rows}</div>`);
+        cards.push(`<div class="card"><h3>${escapeHtml(settings.labels.pins)}</h3>${rows}</div>`);
       }
 
       const circuit = await circuitCard(lesson, settings);
@@ -134,34 +152,34 @@ async function circuitCard(lesson: Lesson, settings: Settings): Promise<string |
   if (!diagram && !sketch) return null;
 
   const button = (key: string, label: string) =>
-    `<button class="copiar-arquivo" type="button" data-arquivo="${key}"
+    `<button class="copy-file" type="button" data-file="${key}"
       aria-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
 
   const source = (key: string, content: string) =>
-    `<pre hidden class="fonte" data-arquivo="${key}">${escapeHtml(content)}</pre>`;
+    `<pre hidden class="source" data-file="${key}">${escapeHtml(content)}</pre>`;
 
-  return `<div class="cartao"><h3>${escapeHtml(settings.labels.circuit)}</h3>
+  return `<div class="card"><h3>${escapeHtml(settings.labels.circuit)}</h3>
     ${
       diagram
-        ? `<div class="circuito">
-      <div class="desenho">…</div>
+        ? `<div class="circuit">
+      <div class="drawing">…</div>
       <div class="zooms">
-        <button class="zoom" type="button" data-zoom="menos" aria-label="Diminuir">−</button>
-        <input class="zoom-nivel" type="text" inputmode="numeric" value="100%"
-          aria-label="Nível de zoom em porcentagem" size="4">
-        <button class="zoom" type="button" data-zoom="mais" aria-label="Aumentar">+</button>
-        <button class="zoom" type="button" data-zoom="ajustar" aria-label="Ajustar à largura">⤡</button>
-        <button class="zoom" type="button" data-zoom="modal" aria-label="Abrir em tela cheia">⤢</button>
+        <button class="zoom" type="button" data-zoom="out" aria-label="${escapeHtml(settings.labels.zoomOut)}">−</button>
+        <input class="zoom-level" type="text" inputmode="numeric" value="100%"
+          aria-label="${escapeHtml(settings.labels.zoomLevel)}" size="4">
+        <button class="zoom" type="button" data-zoom="in" aria-label="${escapeHtml(settings.labels.zoomIn)}">+</button>
+        <button class="zoom" type="button" data-zoom="fit" aria-label="${escapeHtml(settings.labels.zoomFit)}">⤡</button>
+        <button class="zoom" type="button" data-zoom="full" aria-label="${escapeHtml(settings.labels.zoomFull)}">⤢</button>
       </div>
     </div>
-    <dialog id="modal-circuito">
-      <button class="fechar-modal" type="button" aria-label="Fechar">✕</button>
-      <div class="vaga-modal"></div>
+    <dialog id="modal-circuit">
+      <button class="close-modal" type="button" aria-label="${escapeHtml(settings.labels.close)}">✕</button>
+      <div class="modal-slot"></div>
     </dialog>`
         : ""
     }
     <p style="font-size:14px;margin:.9rem 0">${escapeHtml(settings.labels.simulate)}</p>
-    <div class="acoes">
+    <div class="actions">
       ${diagram ? button("diagram", settings.diagram) : ""}
       ${sketch && sketchName ? button("sketch", sketchName) : ""}
     </div>

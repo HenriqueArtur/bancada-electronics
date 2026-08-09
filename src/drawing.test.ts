@@ -24,11 +24,11 @@ describe("the drawing script is valid JavaScript", () => {
 
 describe("what it needs from the page", () => {
   test("reads the diagram embedded by the shell", () => {
-    expect(DRAWING_SCRIPT).toContain('.fonte[data-arquivo="diagram"]');
+    expect(DRAWING_SCRIPT).toContain('.source[data-file="diagram"]');
   });
 
   test("draws into the container the plugin renders", () => {
-    expect(DRAWING_SCRIPT).toContain(".desenho");
+    expect(DRAWING_SCRIPT).toContain(".drawing");
   });
 
   test("gives up quietly when there is nothing to draw", () => {

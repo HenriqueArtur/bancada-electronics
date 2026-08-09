@@ -3,15 +3,15 @@ import { CIRCUIT_STYLES } from "./styles.ts";
 
 describe("circuit styles", () => {
   test("style the containers the plugin renders", () => {
-    for (const cls of [".desenho", ".palco", ".fios", ".zooms", "#modal-circuito"]) {
+    for (const cls of [".drawing", ".stage", ".wires", ".zooms", "#modal-circuit"]) {
       expect(CIRCUIT_STYLES, cls).toContain(cls);
     }
   });
 
   test("take colours from the shell's theme variables, never fixed ones", () => {
     // a hardcoded colour here would ignore whichever theme the reader picked
-    expect(CIRCUIT_STYLES).toContain("var(--desenho-fundo)");
-    expect(CIRCUIT_STYLES).toContain("var(--linha)");
+    expect(CIRCUIT_STYLES).toContain("var(--canvas-bg)");
+    expect(CIRCUIT_STYLES).toContain("var(--border)");
   });
 
   test("pan by transform, which works at any zoom", () => {

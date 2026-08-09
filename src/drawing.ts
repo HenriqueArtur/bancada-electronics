@@ -20,11 +20,11 @@ export const DRAWING_SCRIPT = String.raw`
 // e liga os fios pelas coordenadas que cada elemento publica em pinInfo.
 // Estático de propósito: é para ver a ligação, não para simular.
 (() => {
-  const alvo = document.querySelector(".desenho");
-  const fonte = document.querySelector('.fonte[data-arquivo="diagram"]');
+  const alvo = document.querySelector(".drawing");
+  const fonte = document.querySelector('.source[data-file="diagram"]');
   if (!alvo || !fonte || !window.customElements) return;
 
-  const falhar = (motivo) => { alvo.textContent = motivo; alvo.classList.add("vazio"); };
+  const falhar = (motivo) => { alvo.textContent = motivo; alvo.classList.add("empty"); };
 
   let d;
   try { d = JSON.parse(fonte.textContent); }
@@ -55,9 +55,9 @@ export const DRAWING_SCRIPT = String.raw`
     el.style.width = W + "px";
     el.style.height = H + "px";
     el.innerHTML =
-      '<span class="nome">' + parte.type.replace(/^(wokwi|board)-/, "") + "</span>" +
+      '<span class="name">' + parte.type.replace(/^(wokwi|board)-/, "") + "</span>" +
       pinos.map((p, i) =>
-        '<span class="pino" style="left:' + (i * L + L / 2 - 14) + 'px">' + p + "</span>").join("");
+        '<span class="pin" style="left:' + (i * L + L / 2 - 14) + 'px">' + p + "</span>").join("");
     pinosImprovisados.set(parte.id, pinos.map((nome, i) => ({ nome, x: i * L + L / 2, y: H })));
     return el;
   };
@@ -320,20 +320,20 @@ export const DRAWING_SCRIPT = String.raw`
     svg.setAttribute("class", "fios");
     let semPino = 0;
 
-    for (const [a, b, cor] of d.connections) {
+    for (const [a, b, paint] of d.connections) {
       const pa = posDoPino(a), pb = posDoPino(b);
       if (!pa || !pb) { semPino++; continue; }
 
       // Rota do ELK quando existe: cotovelos, como fiação de verdade, e sem
       // atravessar componente. Sem ela, curva suave — reta vira borrão quando
       // há muitos fios paralelos.
-      const rota = rotas.get(a + "|" + b) ?? rotas.get(b + "|" + a);
+      const handleRequest = rotas.get(a + "|" + b) ?? rotas.get(b + "|" + a);
       let forma;
-      if (rota && rota.length >= 2) {
+      if (handleRequest && handleRequest.length >= 2) {
         const r = 6; // canto arredondado, senão o cotovelo fica duro
-        forma = "M " + rota[0].x + " " + rota[0].y;
-        for (let i = 1; i < rota.length - 1; i++) {
-          const p = rota[i], ant = rota[i - 1], prox = rota[i + 1];
+        forma = "M " + handleRequest[0].x + " " + handleRequest[0].y;
+        for (let i = 1; i < handleRequest.length - 1; i++) {
+          const p = handleRequest[i], ant = handleRequest[i - 1], prox = handleRequest[i + 1];
           const rec = (de, para) => {
             const dx = para.x - de.x, dy = para.y - de.y;
             const d = Math.hypot(dx, dy) || 1;
@@ -344,7 +344,7 @@ export const DRAWING_SCRIPT = String.raw`
           forma += " L " + entra.x + " " + entra.y +
                    " Q " + p.x + " " + p.y + " " + sai.x + " " + sai.y;
         }
-        const fim = rota[rota.length - 1];
+        const fim = handleRequest[handleRequest.length - 1];
         forma += " L " + fim.x + " " + fim.y;
       } else {
         const dx = Math.abs(pb.x - pa.x) * 0.4 + 12;
@@ -364,12 +364,12 @@ export const DRAWING_SCRIPT = String.raw`
 
       const caminho = document.createElementNS(NS, "path");
       caminho.setAttribute("d", forma);
-      caminho.setAttribute("stroke", cor || "#888");
+      caminho.setAttribute("stroke", paint || "#888");
       caminho.setAttribute("fill", "none");
       caminho.setAttribute("stroke-width", "1.8");
       caminho.setAttribute("stroke-linecap", "round");
       caminho.setAttribute("data-liga", liga);
-      caminho.style.color = cor || "#888"; // o drop-shadow usa currentColor
+      caminho.style.color = paint || "#888"; // o drop-shadow usa currentColor
       svg.appendChild(caminho);
       toque._par = caminho;
     }
@@ -383,9 +383,9 @@ export const DRAWING_SCRIPT = String.raw`
 
     let aceso = null;
     const apagar = () => {
-      aceso?.classList.remove("aceso");
+      aceso?.classList.remove("lit");
       aceso = null;
-      svg.classList.remove("mirando");
+      svg.classList.remove("aiming");
       rotulo.hidden = true;
     };
 
@@ -394,8 +394,8 @@ export const DRAWING_SCRIPT = String.raw`
       if (!alvoFio || alvoFio === aceso) return;
       apagar();
       aceso = alvoFio;
-      aceso.classList.add("aceso");
-      svg.classList.add("mirando");
+      aceso.classList.add("lit");
+      svg.classList.add("aiming");
       rotulo.textContent = alvoFio.getAttribute("data-liga");
       rotulo.hidden = false;
     });
@@ -429,7 +429,7 @@ export const DRAWING_SCRIPT = String.raw`
     const caber = () => Math.min(4, Math.max(0.1,
       Math.min((alvo.clientWidth - 16) / maxX, (alvo.clientHeight - 16) / maxY)));
 
-    const nivel = document.querySelector(".zoom-nivel");
+    const nivel = document.querySelector(".zoom-level");
     let escala = 1, tx = 0, ty = 0;
 
     const aplicar = () => {
@@ -487,8 +487,8 @@ export const DRAWING_SCRIPT = String.raw`
     centralizar();
 
     // ── modal ─────────────────────────────────────────────────────
-    const modal = document.getElementById("modal-circuito");
-    const vaga = modal?.querySelector(".vaga-modal");
+    const modal = document.getElementById("modal-circuit");
+    const vaga = modal?.querySelector(".modal-slot");
     const circuito = alvo.closest(".circuito");
     const ondeEstava = circuito?.parentElement;
 
@@ -509,7 +509,7 @@ export const DRAWING_SCRIPT = String.raw`
       requestAnimationFrame(centralizar);
     };
 
-    modal?.querySelector(".fechar-modal")?.addEventListener("click", fecharModal);
+    modal?.querySelector(".close-modal")?.addEventListener("click", fecharModal);
     modal?.addEventListener("close", () => {
       // Esc fecha o <dialog> sozinho; sem isto o circuito ficaria preso lá.
       if (circuito && ondeEstava && !ondeEstava.contains(circuito)) fecharModal();
@@ -518,10 +518,10 @@ export const DRAWING_SCRIPT = String.raw`
     document.querySelectorAll(".zoom").forEach((b) => {
       b.addEventListener("click", () => {
         const acao = b.dataset.zoom;
-        if (acao === "mais") zoomarNoCentro(1.3);
-        else if (acao === "menos") zoomarNoCentro(1 / 1.3);
-        else if (acao === "ajustar") centralizar();
-        else if (acao === "modal") { modal?.open ? fecharModal() : abrirModal(); }
+        if (acao === "in") zoomarNoCentro(1.3);
+        else if (acao === "out") zoomarNoCentro(1 / 1.3);
+        else if (acao === "fit") centralizar();
+        else if (acao === "full") { modal?.open ? fecharModal() : abrirModal(); }
       });
     });
 
@@ -546,15 +546,15 @@ export const DRAWING_SCRIPT = String.raw`
     // fica por cima e engole o mousedown que cair sobre um traço.
     let de = null;
     const comecar = (ev) => {
-      if (ev.button !== 0 || ev.target.closest(".zoom, .fechar-modal")) return;
+      if (ev.button !== 0 || ev.target.closest(".zoom, .close-modal")) return;
       de = { x: ev.clientX, y: ev.clientY, tx, ty };
-      alvo.classList.add("arrastando");
+      alvo.classList.add("dragging");
       ev.preventDefault(); // sem isto o browser inicia arrasto de imagem/seleção
     };
     alvo.addEventListener("mousedown", comecar);
     palco.addEventListener("mousedown", comecar); // o SVG dos fios fica por cima
 
-    addEventListener("mouseup", () => { de = null; alvo.classList.remove("arrastando"); });
+    addEventListener("mouseup", () => { de = null; alvo.classList.remove("dragging"); });
     addEventListener("mousemove", (ev) => {
       if (!de) return;
       tx = de.tx + (ev.clientX - de.x);
