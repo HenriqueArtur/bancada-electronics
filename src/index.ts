@@ -48,6 +48,18 @@ const DEFAULTS: Settings = {
   },
 };
 
+/**
+ * Where a dependency actually landed.
+ *
+ * This used to be `join(root, "node_modules/...")`, which assumes the packages
+ * sit beside the repository being viewed. In a monorepo they are hoisted to
+ * the workspace root instead, and the asset 404s — the drawing silently never
+ * loads. The resolver knows; guessing the path does not.
+ */
+function resolveDep(specifier: string): string {
+  return Bun.fileURLToPath(import.meta.resolve(specifier));
+}
+
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -116,12 +128,12 @@ export function electronicsPlugin(): Plugin {
     assets: (): Asset[] => [
       {
         name: "wokwi-elements.js",
-        path: join(settings.root, "node_modules/@wokwi/elements/dist/wokwi-elements.bundle.min.js"),
+        path: resolveDep("@wokwi/elements/dist/wokwi-elements.bundle.min.js"),
         type: "text/javascript; charset=utf-8",
       },
       {
         name: "elk.js",
-        path: join(settings.root, "node_modules/elkjs/lib/elk.bundled.js"),
+        path: resolveDep("elkjs/lib/elk.bundled.js"),
         type: "text/javascript; charset=utf-8",
       },
     ],
