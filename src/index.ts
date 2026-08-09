@@ -186,3 +186,10 @@ async function circuitCard(lesson: Lesson, settings: Settings): Promise<string |
     ${diagram ? source("diagram", diagram) : ""}
     ${sketch ? source("sketch", sketch) : ""}</div>`;
 }
+
+/**
+ * The factory, declared. The loader takes `default` or a named `plugin`, and
+ * refuses to guess: it once picked `checkRunningLow` because that happened to
+ * be the first exported function.
+ */
+export default electronicsPlugin;

@@ -1,6 +1,6 @@
 {
   "name": "@bancada/electronics",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Electronics plugin for bancada: ESP32 pin rules and a circuit drawing from diagram.json",
   "keywords": [
     "bancada",
