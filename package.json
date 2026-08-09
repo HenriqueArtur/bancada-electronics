@@ -2,8 +2,28 @@
   "name": "@bancada/electronics",
   "version": "0.1.0",
   "description": "Electronics plugin for bancada: ESP32 pin rules and a circuit drawing from diagram.json",
+  "keywords": [
+    "bancada",
+    "bancada-plugin",
+    "electronics",
+    "esp32",
+    "wokwi",
+    "circuit"
+  ],
+  "homepage": "https://github.com/HenriqueArtur/bancada-electronics#readme",
+  "bugs": {
+    "url": "https://github.com/HenriqueArtur/bancada-electronics/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HenriqueArtur/bancada-electronics.git"
+  },
   "license": "MIT",
+  "author": "Henrique Artur <contato@henriqueartur.com>",
   "type": "module",
+  "engines": {
+    "bun": ">=1.3.0"
+  },
   "module": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -15,18 +35,6 @@
     "README.md",
     "LICENSE"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HenriqueArtur/bancada-electronics.git"
-  },
-  "keywords": [
-    "bancada",
-    "bancada-plugin",
-    "electronics",
-    "esp32",
-    "wokwi",
-    "circuit"
-  ],
   "publishConfig": {
     "access": "public"
   },
@@ -35,22 +43,22 @@
     "lint": "biome check src",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
-    "bancada": ">=0.1.0"
-  },
   "dependencies": {
     "@wokwi/elements": "1.9.2",
     "elkjs": "0.12.0"
+  },
+  "peerDependencies": {
+    "bancada": ">=0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "bancada": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.14",
     "@types/bun": "1.3.14",
     "bancada": "github:HenriqueArtur/bancada",
     "typescript": "5.9.3"
-  },
-  "peerDependenciesMeta": {
-    "bancada": {
-      "optional": true
-    }
   }
 }

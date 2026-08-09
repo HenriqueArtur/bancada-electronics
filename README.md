@@ -51,6 +51,11 @@ the lesson, so declare `inventory` first in the config.
 With no inventory installed, the rules that depend only on the pin number
 still run. Dropping them because a sibling plugin is missing would be worse.
 
+## Requirements
+
+**bun 1.3 or newer**, and `bancada` as its host. The package ships TypeScript
+with no build step and reads files through `Bun.file`.
+
 ## Install
 
 ```bash
